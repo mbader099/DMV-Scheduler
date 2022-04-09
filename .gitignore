@@ -1,0 +1,11 @@
+# Selenium logs
+geckodriver.log
+
+# Python virtual environments
+my-env/*
+venv/*
+newenv/*
+.vscode
+__pycache__
+
+.idea/*

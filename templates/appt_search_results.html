@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Results{% endblock %}
+
+{% block script %}
+<script>
+    // Load bootstrap table
+    $(document).ready(function() {
+        const table = $('#apptResultsTable');
+
+        let data = [];
+        {% for appt in appts %}
+            data.push({{ appt|safe }});
+        {% endfor %}
+
+        const columns = [
+            {
+                field: "locId",
+                title: "Location",
+                sortable: true,
+                filterControl: "select",
+                formatter: function(value, row){
+                    const locDict = {{ locations|safe }}
+                    return locDict[value]
+                }
+            },
+            {
+                field: "categoryName",
+                title: "Category",
+                sortable: true,
+                filterControl: "select"
+            },
+            {
+                field: "apptTypeName",
+                title: "Appointment Type",
+                sortable: true,
+                filterControl: "select"
+            },
+            {
+                field: "startDateTime",
+                title: "Start Date/Time",
+                sortable: true
+            },
+            {
+                field: "actions",
+                title: "Actions",
+                formatter: function(value, row){
+                    return `<a target="_blank" href="https://vadmvappointments.as.me/schedule.php?calendarID=${row.locId}">Book</a>`
+                }
+            }
+        ];
+
+        table.bootstrapTable({
+            data: data,
+            columns: columns,
+            pagination: true,
+            search: true,
+            detailView: true,
+            detailViewIcon: true,
+            detailViewAlign: "left",
+            filterControl: true,
+            detailFormatter: function(index, row){
+                return `
+                    <p><b>Description:</b></p>
+                    ${row.apptTypeDesc.replaceAll("\n", "<br />")}`;
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+    <h3 style="text-align: center;">Appointment Results</h3>
+    <table id="apptResultsTable"></table>
+{% endblock %}

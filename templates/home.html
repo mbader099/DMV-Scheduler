@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            let serviceTypes = [];
+            {% for svcType in svc_types %}
+                serviceTypes.push({{ svcType|safe }});
+            {% endfor %}
+
+
+            $("#svcType").change(function () {
+                var val = $(this).val();
+                let locsHtmlStr = '';
+                const svcType = serviceTypes.find(s => s.svcId === val);
+                svcType.locationsJson.forEach((loc) => {
+                     locsHtmlStr += `<option value="${loc.locationID}">${loc.location}</option>`;
+                });
+                $("#locations").html(locsHtmlStr);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block header %}
+    <div class="jumbotron text-center">
+        <h1 class="display-3">SCHEDULER</h1>
+        <p class="lead">Please enter your desired preferences to schedule your DMV appointment.</p>
+        <a href="/" class="btn btn-primary">DMV Scheduler</a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <h3 style="text-align: center;">Search for Appointments</h3>
+    <form action="/appointmentSearch" method="post">
+        <div class="form-group">
+            <label for="svcType">Service Type: </label>
+            <select class="form-control" name="svcType" id="svcType" required>
+                <option value="">-- Select Service Type --</option>
+                {% for item in svc_types %}
+                    <option value="{{ item.svcId }}">{{ item.displayName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="locations">Locations: </label>
+            <select class="form-control" name="locations" id="locations" size="5" multiple="multiple" required>
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="startdate">Search From:</label>
+                <input class="form-control" type="date" name="startdate" id="startdate" required
+                       pattern="\d{4}-\d{2}-\d{2}" min="{{ min_date }}" max="{{ max_date }}">
+            </div>
+
+            <div class="form-group col">
+                <label for="enddate">Search To:</label>
+                <input class="form-control" type="date" name="enddate" id="enddate" required
+                       pattern="\d{4}-\d{2}-\d{2}" min="{{ min_date }}" max="{{ max_date }}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+{% endblock %}
